@@ -84,7 +84,7 @@ class Ui_MainWindow(object):
     def check_port_state(self, portNumber):
         print("test")
         if (portNumber%2): return 2
-        else: return 0 #0/2
+        else: return 0 #0/2 results
 
     
     def change_port_state(self, portNumber, newPortState):
