@@ -57,14 +57,14 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.check_ports_states()
+        self.__check_ports_states()
 
-        self.checkBox_port_1.stateChanged.connect(lambda: self.change_port_state(1, self.checkBox_port_1.isChecked()))
-        self.checkBox_port_2.stateChanged.connect(lambda: self.change_port_state(2, self.checkBox_port_2.isChecked()))
-        self.checkBox_port_3.stateChanged.connect(lambda: self.change_port_state(3, self.checkBox_port_3.isChecked()))
-        self.checkBox_port_4.stateChanged.connect(lambda: self.change_port_state(4, self.checkBox_port_4.isChecked()))
+        self.checkBox_port_1.stateChanged.connect(lambda: self.__change_port_state(1, self.checkBox_port_1.isChecked()))
+        self.checkBox_port_2.stateChanged.connect(lambda: self.__change_port_state(2, self.checkBox_port_2.isChecked()))
+        self.checkBox_port_3.stateChanged.connect(lambda: self.__change_port_state(3, self.checkBox_port_3.isChecked()))
+        self.checkBox_port_4.stateChanged.connect(lambda: self.__change_port_state(4, self.checkBox_port_4.isChecked()))
         
-        self.pushButton_programInfo.clicked.connect(self.show_program_info)
+        self.pushButton_programInfo.clicked.connect(self.__show_program_info)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -75,22 +75,21 @@ class Ui_MainWindow(object):
         self.checkBox_port_4.setText(_translate("MainWindow", "Порт №4"))
         self.pushButton_programInfo.setText(_translate("MainWindow", "О программе"))
 
-    def check_ports_states(self):
-        self.checkBox_port_1.setCheckState(self.check_port_state(1))
-        self.checkBox_port_2.setCheckState(self.check_port_state(2))
-        self.checkBox_port_3.setCheckState(self.check_port_state(3))
-        self.checkBox_port_4.setCheckState(self.check_port_state(4))
+    def __check_ports_states(self):
+        self.checkBox_port_1.setCheckState(self.__check_port_state(1))
+        self.checkBox_port_2.setCheckState(self.__check_port_state(2))
+        self.checkBox_port_3.setCheckState(self.__check_port_state(3))
+        self.checkBox_port_4.setCheckState(self.__check_port_state(4))
 
-    def check_port_state(self, portNumber):
-        print("test")
+    def __check_port_state(self, portNumber):
         if (portNumber%2): return 2
         else: return 0 #0/2 results
 
     
-    def change_port_state(self, portNumber, newPortState):
+    def __change_port_state(self, portNumber, newPortState):
         print("Номер порта: ", str(portNumber), " - ", str(newPortState))
 
-    def show_program_info(self):
+    def __show_program_info(self):
         creators_info = QMessageBox()
         creators_info.setWindowTitle("О программе")
         creators_info.setText("Создатели:\nCтуденты группы АБ-920\nПольщиков Г.А., Попова Ю.А., Посуконько О.А., Репин С.Е.")
