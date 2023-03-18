@@ -82,7 +82,8 @@ class Ui_MainWindow(object):
         self.checkBox_port_4.setCheckState(self.check_port_state(4))
 
     def check_port_state(self, portNumber):
-        return 2 #0/2
+        if (portNumber%2): return 2
+        else: return 0 #0/2
 
     
     def change_port_state(self, portNumber, newPortState):
