@@ -186,8 +186,8 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    portSelection = QtWidgets.QWidget()
+    startWindow = QtWidgets.QWidget()
     ui = Ui_portSelection()
-    ui.setupUi(portSelection)
-    portSelection.show()
+    ui.setupUi(startWindow)
+    startWindow.show()
     sys.exit(app.exec_())
