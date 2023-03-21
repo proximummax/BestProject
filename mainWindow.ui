@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>270</width>
+    <width>310</width>
     <height>150</height>
    </rect>
   </property>
@@ -21,18 +21,18 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>270</width>
+    <width>310</width>
     <height>150</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>270</width>
+    <width>310</width>
     <height>150</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Система включения СЗИ</string>
+   <string>Система управления питанием СЗИ</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="verticalLayoutWidget">
@@ -78,7 +78,7 @@
    <widget class="QPushButton" name="pushButton_programInfo">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>180</x>
       <y>40</y>
       <width>91</width>
       <height>61</height>

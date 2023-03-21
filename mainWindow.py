@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt5.QtCore import QIODevice
 
-
 class Ui_MainWindow(object):
     serial = QSerialPort()
     serial.setBaudRate(115200)
