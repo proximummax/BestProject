@@ -3,21 +3,11 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt5.QtCore import QIODevice
 
+
+
 class Ui_MainWindow(object):
-    serial = QSerialPort()
-    serial.setBaudRate(115200)
-
-    def search_serial_port(self):
-        portlist = []
-        ports = QSerialPortInfo().availablePorts()
-        for port in ports:
-            portlist.append(port.portName())
-        return portlist
-
-
-    def setupUi(self, MainWindow):
-        self.search_serial_port()
-
+    
+    def setupUi(self, MainWindow, currentSerialPort):
         # window drawing
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
