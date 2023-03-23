@@ -4,6 +4,8 @@ from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt5.QtCore import QIODevice
 from PyQt5.QtWidgets import QMessageBox
 
+BAUD_RATE = 9600
+
 class Ui_portSelection(object):
            
     def setupUi(self, portSelection):
@@ -52,7 +54,6 @@ class Ui_portSelection(object):
         self.label.setText(_translate("portSelection", "Выберете COM-порт для связи с микроконтроллером"))
 
     def __search_serial_ports(self): # method of searching for list of available serial ports
-        serial = QSerialPort()
         portlist = []
         for port in QSerialPortInfo().availablePorts():
             portlist.append(port.portName())
@@ -124,6 +125,11 @@ class Ui_MainWindow(object):
         self.__retranslateUi(MainWindow, currentSerialPort)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        # инициализация COM-porta, установка скорости передачи
+        self.serial = QSerialPort()
+        self.serial.setBaudRate(BAUD_RATE)
+        self.serial.readyRead().connect(lambda: self.get_info_from_mc)
+        
         self.__check_ports_states() # port state check method
 
         # user interface signals
