@@ -128,8 +128,8 @@ class Ui_MainWindow(object):
         # инициализация COM-porta, установка скорости передачи
         self.serial = QSerialPort()
         self.serial.setBaudRate(BAUD_RATE)
-        self.serial.readyRead().connect(lambda: self.get_info_from_mc)
-        
+        self.serial.readyRead.connect(lambda: self.get_info_from_mc())
+
         self.__check_ports_states() # port state check method
 
         # user interface signals
@@ -151,15 +151,23 @@ class Ui_MainWindow(object):
         self.pushButton_changeSerialPort.setText(_translate("MainWindow", "Изменить COM-порт"))
         self.pushButton_programInfo.setText(_translate("MainWindow", "О программе"))
 
-    def __check_ports_states(self):
-        self.checkBox_port_1.setCheckState(self.__check_port_state(1))
-        self.checkBox_port_2.setCheckState(self.__check_port_state(2))
-        self.checkBox_port_3.setCheckState(self.__check_port_state(3))
-        self.checkBox_port_4.setCheckState(self.__check_port_state(4))
+    def get_info_from_mc(self):
+        states_of_ports = [2,2,0,2] # пример
+        # код..
+        #
+        #
+        return states_of_ports
 
-    def __check_port_state(self, portNumber):
-        if (portNumber%2): return 2
-        else: return 0 #0/2 results
+    def __check_ports_states(self):
+        states_of_ports = self.get_info_from_mc()
+        self.checkBox_port_1.setCheckState(states_of_ports[0])
+        self.checkBox_port_2.setCheckState(states_of_ports[1])
+        self.checkBox_port_3.setCheckState(states_of_ports[2])
+        self.checkBox_port_4.setCheckState(states_of_ports[3])
+
+    #def __check_port_state(self, portNumber):
+    #    if (portNumber%2): return 2
+    #    else: return 0 #0/2 results
     
     def __change_port_state(self, portNumber, newPortState):
         print("Номер порта: ", str(portNumber), " - ", str(newPortState))
