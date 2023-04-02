@@ -25,9 +25,9 @@ class Ui_portSelection(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.comboBox_ports = QtWidgets.QComboBox(self.horizontalLayoutWidget)
-        self.comboBox_ports.setObjectName("comboBox_ports")
-        self.horizontalLayout.addWidget(self.comboBox_ports)
+        self.comboBox_pins = QtWidgets.QComboBox(self.horizontalLayoutWidget)
+        self.comboBox_pins.setObjectName("comboBox_pins")
+        self.horizontalLayout.addWidget(self.comboBox_pins)
         self.pushButton_ok = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -43,7 +43,7 @@ class Ui_portSelection(object):
         self.__retranslateUi(portSelection)
         QtCore.QMetaObject.connectSlotsByName(portSelection)
 
-        self.comboBox_ports.addItems(self.__search_serial_ports()) # filling comboBox of ports
+        self.comboBox_pins.addItems(self.__search_serial_ports()) # filling comboBox of ports
         self.pushButton_ok.clicked.connect(lambda: self.__open_main_window(portSelection))
         
 
@@ -62,7 +62,7 @@ class Ui_portSelection(object):
     def __open_main_window(self, portSelection):
         self.MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.MainWindow, self.comboBox_ports.currentText()) # opening the main window and specifying the selected port 
+        self.ui.setupUi(self.MainWindow, self.comboBox_pins.currentText()) # opening the main window and specifying the selected port 
         self.MainWindow.show()
         portSelection.close()
 
@@ -88,18 +88,18 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.checkBox_port_1 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_port_1.setObjectName("checkBox_port_1")
-        self.verticalLayout.addWidget(self.checkBox_port_1)
-        self.checkBox_port_2 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_port_2.setObjectName("checkBox_port_2")
-        self.verticalLayout.addWidget(self.checkBox_port_2)
-        self.checkBox_port_3 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_port_3.setObjectName("checkBox_port_3")
-        self.verticalLayout.addWidget(self.checkBox_port_3)
-        self.checkBox_port_4 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_port_4.setObjectName("checkBox_port_4")
-        self.verticalLayout.addWidget(self.checkBox_port_4)
+        self.checkBox_pin_1 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        self.checkBox_pin_1.setObjectName("checkBox_pin_1")
+        self.verticalLayout.addWidget(self.checkBox_pin_1)
+        self.checkBox_pin_2 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        self.checkBox_pin_2.setObjectName("checkBox_pin_2")
+        self.verticalLayout.addWidget(self.checkBox_pin_2)
+        self.checkBox_pin_3 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        self.checkBox_pin_3.setObjectName("checkBox_pin_3")
+        self.verticalLayout.addWidget(self.checkBox_pin_3)
+        self.checkBox_pin_4 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        self.checkBox_pin_4.setObjectName("checkBox_pin_4")
+        self.verticalLayout.addWidget(self.checkBox_pin_4)
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(130, 40, 201, 80))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
@@ -130,47 +130,47 @@ class Ui_MainWindow(object):
         self.serial.setBaudRate(BAUD_RATE)
         self.serial.readyRead.connect(lambda: self.get_info_from_mc())
 
-        self.__check_ports_states() # port state check method
+        self.__check_pins_states()
 
         # user interface signals
-        self.checkBox_port_1.stateChanged.connect(lambda: self.__change_port_state(1, self.checkBox_port_1.isChecked()))
-        self.checkBox_port_2.stateChanged.connect(lambda: self.__change_port_state(2, self.checkBox_port_2.isChecked()))
-        self.checkBox_port_3.stateChanged.connect(lambda: self.__change_port_state(3, self.checkBox_port_3.isChecked()))
-        self.checkBox_port_4.stateChanged.connect(lambda: self.__change_port_state(4, self.checkBox_port_4.isChecked()))
+        self.checkBox_pin_1.stateChanged.connect(lambda: self.__change_pin_state(1, self.checkBox_pin_1.isChecked()))
+        self.checkBox_pin_2.stateChanged.connect(lambda: self.__change_pin_state(2, self.checkBox_pin_2.isChecked()))
+        self.checkBox_pin_3.stateChanged.connect(lambda: self.__change_pin_state(3, self.checkBox_pin_3.isChecked()))
+        self.checkBox_pin_4.stateChanged.connect(lambda: self.__change_pin_state(4, self.checkBox_pin_4.isChecked()))
         self.pushButton_programInfo.clicked.connect(self.__show_program_info)
         self.pushButton_changeSerialPort.clicked.connect(lambda: self.__open_portSelection_window(MainWindow))
 
     def __retranslateUi(self, MainWindow, currentSerialPort):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Система управления питанием СЗИ"))
-        self.checkBox_port_1.setText(_translate("MainWindow", "Порт №1"))
-        self.checkBox_port_2.setText(_translate("MainWindow", "Порт №2"))
-        self.checkBox_port_3.setText(_translate("MainWindow", "Порт №3"))
-        self.checkBox_port_4.setText(_translate("MainWindow", "Порт №4"))
+        self.checkBox_pin_1.setText(_translate("MainWindow", "Пин №1"))
+        self.checkBox_pin_2.setText(_translate("MainWindow", "Пин №2"))
+        self.checkBox_pin_3.setText(_translate("MainWindow", "Пин №3"))
+        self.checkBox_pin_4.setText(_translate("MainWindow", "Пин №4"))
         self.label_currentSerialPort.setText(_translate("MainWindow", "Текущий COM-порт: ")+currentSerialPort)
         self.pushButton_changeSerialPort.setText(_translate("MainWindow", "Изменить COM-порт"))
         self.pushButton_programInfo.setText(_translate("MainWindow", "О программе"))
 
     def get_info_from_mc(self):
-        states_of_ports = [2,2,0,2] # пример
+        states_of_pins = [2,2,0,2] # пример
         # код..
         #
         #
-        return states_of_ports
+        return states_of_pins
 
-    def __check_ports_states(self):
-        states_of_ports = self.get_info_from_mc()
-        self.checkBox_port_1.setCheckState(states_of_ports[0])
-        self.checkBox_port_2.setCheckState(states_of_ports[1])
-        self.checkBox_port_3.setCheckState(states_of_ports[2])
-        self.checkBox_port_4.setCheckState(states_of_ports[3])
+    def __check_pins_states(self):
+        states_of_pins = self.get_info_from_mc()
+        self.checkBox_pin_1.setCheckState(states_of_pins[0])
+        self.checkBox_pin_2.setCheckState(states_of_pins[1])
+        self.checkBox_pin_3.setCheckState(states_of_pins[2])
+        self.checkBox_pin_4.setCheckState(states_of_pins[3])
 
     #def __check_port_state(self, portNumber):
     #    if (portNumber%2): return 2
     #    else: return 0 #0/2 results
     
-    def __change_port_state(self, portNumber, newPortState):
-        print("Номер порта: ", str(portNumber), " - ", str(newPortState))
+    def __change_pin_state(self, pinNumber, newPinState):
+        print("Номер порта: ", str(pinNumber), " - ", str(newPinState))
 
     def __show_program_info(self):
         creators_info = QMessageBox()
