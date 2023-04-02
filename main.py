@@ -3,8 +3,28 @@ import sys
 from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt5.QtCore import QIODevice
 from PyQt5.QtWidgets import QMessageBox
+from enum import Enum
 
 BAUD_RATE = 9600
+
+
+
+class ExpectedSignalType(Enum):
+    NO_WAITING = 1
+    WAITING_PINS_INFO = 2
+    WAITING_COMMAND_RESULT = 3
+
+class PinState(Enum):
+    OFF = 0
+    ON = 1
+
+COMMANDS = {(PinState.ON, 1) : "comm1\n", # словарь команд: (состояние пина, номер пина) -> команда
+            (PinState.ON, 2) : "comm2\n",
+            (PinState.ON, 3) : "comm3\n",
+            (PinState.OFF, 1) : "comm4\n",
+            (PinState.OFF, 2) : "comm5\n",
+            (PinState.OFF, 3) : "comm6\n",
+            }
 
 class Ui_portSelection(object):
            
@@ -25,9 +45,9 @@ class Ui_portSelection(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.comboBox_ports = QtWidgets.QComboBox(self.horizontalLayoutWidget)
-        self.comboBox_ports.setObjectName("comboBox_ports")
-        self.horizontalLayout.addWidget(self.comboBox_ports)
+        self.comboBox_pins = QtWidgets.QComboBox(self.horizontalLayoutWidget)
+        self.comboBox_pins.setObjectName("comboBox_pins")
+        self.horizontalLayout.addWidget(self.comboBox_pins)
         self.pushButton_ok = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -43,9 +63,9 @@ class Ui_portSelection(object):
         self.__retranslateUi(portSelection)
         QtCore.QMetaObject.connectSlotsByName(portSelection)
 
-        self.comboBox_ports.addItems(self.__search_serial_ports()) # filling comboBox of ports
+        self.comboBox_pins.addItems(self.__search_serial_ports()) # filling comboBox of ports
         self.pushButton_ok.clicked.connect(lambda: self.__open_main_window(portSelection))
-        
+       
 
     def __retranslateUi(self, portSelection):
         _translate = QtCore.QCoreApplication.translate
@@ -53,18 +73,28 @@ class Ui_portSelection(object):
         self.pushButton_ok.setText(_translate("portSelection", "OK"))
         self.label.setText(_translate("portSelection", "Выберете COM-порт для связи с микроконтроллером"))
 
+
     def __search_serial_ports(self): # method of searching for list of available serial ports
         portlist = []
         for port in QSerialPortInfo().availablePorts():
             portlist.append(port.portName())
         return portlist
     
+
     def __open_main_window(self, portSelection):
+        if (self.comboBox_pins.currentText() == ""): # проверка: есть ли COM-порт
+            creators_info = QMessageBox()
+            creators_info.setWindowTitle("Ошибка!")
+            creators_info.setText("Отсутствуют COM-порты.")
+            creators_info.exec_()
+            self.__search_serial_ports() # повторный запуск функии определения COM-портов
+            return
         self.MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.MainWindow, self.comboBox_ports.currentText()) # opening the main window and specifying the selected port 
+        self.ui.setupUi(self.MainWindow, self.comboBox_pins.currentText()) # opening the main window and specifying the selected port 
         self.MainWindow.show()
         portSelection.close()
+
 
 class Ui_MainWindow(object):
     
@@ -88,18 +118,15 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.checkBox_port_1 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_port_1.setObjectName("checkBox_port_1")
-        self.verticalLayout.addWidget(self.checkBox_port_1)
-        self.checkBox_port_2 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_port_2.setObjectName("checkBox_port_2")
-        self.verticalLayout.addWidget(self.checkBox_port_2)
-        self.checkBox_port_3 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_port_3.setObjectName("checkBox_port_3")
-        self.verticalLayout.addWidget(self.checkBox_port_3)
-        self.checkBox_port_4 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
-        self.checkBox_port_4.setObjectName("checkBox_port_4")
-        self.verticalLayout.addWidget(self.checkBox_port_4)
+        self.checkBox_pin_1 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        self.checkBox_pin_1.setObjectName("checkBox_pin_1")
+        self.verticalLayout.addWidget(self.checkBox_pin_1)
+        self.checkBox_pin_2 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        self.checkBox_pin_2.setObjectName("checkBox_pin_2")
+        self.verticalLayout.addWidget(self.checkBox_pin_2)
+        self.checkBox_pin_3 = QtWidgets.QCheckBox(self.verticalLayoutWidget)
+        self.checkBox_pin_3.setObjectName("checkBox_pin_3")
+        self.verticalLayout.addWidget(self.checkBox_pin_3)
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(130, 40, 201, 80))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
@@ -125,52 +152,83 @@ class Ui_MainWindow(object):
         self.__retranslateUi(MainWindow, currentSerialPort)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        # инициализация COM-porta, установка скорости передачи
+        # инициализация COM-porta, установка скорости передачи, открытие порта
         self.serial = QSerialPort()
         self.serial.setBaudRate(BAUD_RATE)
-        self.serial.readyRead.connect(lambda: self.get_info_from_mc())
+        self.serial.setPortName(currentSerialPort)
+        self.serial.open(QIODevice.ReadWrite)
 
-        self.__check_ports_states() # port state check method
+        self.serial.readyRead.connect(lambda: self.__get_info_from_mc()) # надо ли оно??
+       
+        self.type_of_expected_mc_signal = ExpectedSignalType.NO_WAITING # тип ожидаемого сигнала от МК - остутствие сигнала
+        self.__check_pins_states() # запрос состояний пинов
 
         # user interface signals
-        self.checkBox_port_1.stateChanged.connect(lambda: self.__change_port_state(1, self.checkBox_port_1.isChecked()))
-        self.checkBox_port_2.stateChanged.connect(lambda: self.__change_port_state(2, self.checkBox_port_2.isChecked()))
-        self.checkBox_port_3.stateChanged.connect(lambda: self.__change_port_state(3, self.checkBox_port_3.isChecked()))
-        self.checkBox_port_4.stateChanged.connect(lambda: self.__change_port_state(4, self.checkBox_port_4.isChecked()))
+        self.checkBox_pin_1.clicked.connect(lambda: self.__change_pin_state(1, PinState((self.checkBox_pin_1.isChecked() + 1) // 2)))
+        self.checkBox_pin_2.clicked.connect(lambda: self.__change_pin_state(2, PinState((self.checkBox_pin_2.isChecked() + 1) // 2)))
+        self.checkBox_pin_3.clicked.connect(lambda: self.__change_pin_state(3, PinState((self.checkBox_pin_3.isChecked() + 1) // 2)))
         self.pushButton_programInfo.clicked.connect(self.__show_program_info)
         self.pushButton_changeSerialPort.clicked.connect(lambda: self.__open_portSelection_window(MainWindow))
+
 
     def __retranslateUi(self, MainWindow, currentSerialPort):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Система управления питанием СЗИ"))
-        self.checkBox_port_1.setText(_translate("MainWindow", "Порт №1"))
-        self.checkBox_port_2.setText(_translate("MainWindow", "Порт №2"))
-        self.checkBox_port_3.setText(_translate("MainWindow", "Порт №3"))
-        self.checkBox_port_4.setText(_translate("MainWindow", "Порт №4"))
+        self.checkBox_pin_1.setText(_translate("MainWindow", "Пин №1"))
+        self.checkBox_pin_2.setText(_translate("MainWindow", "Пин №2"))
+        self.checkBox_pin_3.setText(_translate("MainWindow", "Пин №3"))
         self.label_currentSerialPort.setText(_translate("MainWindow", "Текущий COM-порт: ")+currentSerialPort)
         self.pushButton_changeSerialPort.setText(_translate("MainWindow", "Изменить COM-порт"))
         self.pushButton_programInfo.setText(_translate("MainWindow", "О программе"))
 
-    def get_info_from_mc(self):
-        states_of_ports = [2,2,0,2] # пример
-        # код..
+
+    def __get_info_from_mc(self):
+        inputData = str(self.serial.readLine(), 'utf-8').strip()
+        #print(inputData) # Для отладки 
+        if (self.type_of_expected_mc_signal == ExpectedSignalType.NO_WAITING):
+            print("Несканционированная передача данных с микроконтроллера.") 
+            # MessageBox?
+            #
+            #
+        elif (self.type_of_expected_mc_signal == ExpectedSignalType.WAITING_PINS_INFO):
+            print("Получение инфы от МК...") 
+            # здесь должен быть парсер
+            #
+            #
+            return [0, 2, 0]
+        elif (self.type_of_expected_mc_signal == ExpectedSignalType.WAITING_COMMAND_RESULT):
+            self.type_of_expected_mc_signal = ExpectedSignalType.NO_WAITING
+            if (inputData == "Command is correct"): return True
+            else: return False
+
+
+    def __check_pins_states(self):
+        self.type_of_expected_mc_signal = ExpectedSignalType.WAITING_PINS_INFO
+        # здесь должна быть команда запроса (?)
         #
         #
-        return states_of_ports
 
-    def __check_ports_states(self):
-        states_of_ports = self.get_info_from_mc()
-        self.checkBox_port_1.setCheckState(states_of_ports[0])
-        self.checkBox_port_2.setCheckState(states_of_ports[1])
-        self.checkBox_port_3.setCheckState(states_of_ports[2])
-        self.checkBox_port_4.setCheckState(states_of_ports[3])
-
-    #def __check_port_state(self, portNumber):
-    #    if (portNumber%2): return 2
-    #    else: return 0 #0/2 results
+        states_of_pins = self.__get_info_from_mc()
+        self.checkBox_pin_1.setCheckState(states_of_pins[0])
+        self.checkBox_pin_2.setCheckState(states_of_pins[1])
+        self.checkBox_pin_3.setCheckState(states_of_pins[2])
     
-    def __change_port_state(self, portNumber, newPortState):
-        print("Номер порта: ", str(portNumber), " - ", str(newPortState))
+
+    def __change_pin_state(self, pinNumber, newPinState):
+        command = COMMANDS.get(tuple([newPinState, pinNumber])).encode('utf-8')
+        #print(command) # временно для отладки
+        self.type_of_expected_mc_signal = ExpectedSignalType.WAITING_COMMAND_RESULT
+        self.serial.write(command)
+        self.serial.waitForBytesWritten()
+        if (not self.__get_info_from_mc()): # обратное изменение состояния в случае ошибки
+            print("Произошла ошибка") # временно для отладки (или message Box)
+            if (pinNumber == 1):
+                self.checkBox_pin_1.setCheckState((newPinState.value + 2) % 3)
+            elif (pinNumber == 2):
+                self.checkBox_pin_2.setCheckState((newPinState.value + 2) % 3)
+            elif (pinNumber == 3):
+                self.checkBox_pin_3.setCheckState((newPinState.value + 2) % 3)
+
 
     def __show_program_info(self):
         creators_info = QMessageBox()
@@ -178,11 +236,13 @@ class Ui_MainWindow(object):
         creators_info.setText("Создатели:\nCтуденты группы АБ-920\nПольщиков Г.А., Попова Ю.А., Посуконько О.А., Репин С.Е.")
         creators_info.exec_()
 
+
     def __open_portSelection_window(self, mainWindow):
         self.portSelection = QtWidgets.QMainWindow()
         self.ui = Ui_portSelection()
         self.ui.setupUi(self.portSelection)
         self.portSelection.show()
+        self.serial.close() #закрытие COM-порта
         mainWindow.close()
 
 
